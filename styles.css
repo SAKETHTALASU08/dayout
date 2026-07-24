@@ -1,0 +1,557 @@
+/* Modern Reset & Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400;1,600&family=Outfit:wght@400;500;600;700&family=Caveat:wght@600&display=swap');
+
+:root {
+  --bg-deep-navy: #16233D;
+  --bg-card-navy: #24395E;
+  --bg-card-navy-light: #2c4572;
+  --accent-olive: #6B7A4F;
+  --accent-olive-hover: #8A9A5B;
+  --accent-olive-focus: #A4B875;
+  --accent-olive-light: rgba(107, 122, 79, 0.25);
+  --text-parchment: #FAF6EC; /* High contrast cream */
+  --text-parchment-muted: #DCD6C5; /* Meets WCAG AA contrast against navy */
+  --text-parchment-dim: #C8C1B0; /* Meets WCAG AA contrast for small text */
+  --border-gold: rgba(212, 175, 55, 0.4);
+  --shadow-card: 0 25px 60px rgba(10, 16, 30, 0.75), 0 0 40px rgba(107, 122, 79, 0.18);
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-hand: 'Caveat', cursive;
+  --transition-speed: 280ms;
+  --transition-curve: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  min-height: 100%;
+}
+
+body {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4.5rem 1.25rem 2.5rem 1.25rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  font-family: var(--font-sans);
+  background-color: var(--bg-deep-navy);
+  color: var(--text-parchment);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: 
+    radial-gradient(circle at 50% 20%, rgba(36, 57, 94, 0.85) 0%, rgba(22, 35, 61, 1) 70%),
+    radial-gradient(circle at 80% 80%, rgba(107, 122, 79, 0.18) 0%, transparent 50%);
+  background-attachment: fixed;
+  position: relative;
+}
+
+/* Subtle background texture pattern */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(rgba(250, 246, 236, 0.05) 1px, transparent 0);
+  background-size: 24px 24px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Confetti Canvas Layer */
+#confetti-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* Main Container Frame */
+.app-container {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  z-index: 10;
+  margin: 0 auto;
+}
+
+/* Invitation Card Styling */
+.invite-card {
+  position: relative;
+  background: linear-gradient(145deg, rgba(36, 57, 94, 0.96), rgba(26, 41, 69, 0.99));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-gold);
+  border-radius: 20px;
+  padding: 3.5rem 2.25rem 2.25rem 2.25rem;
+  box-shadow: var(--shadow-card);
+  overflow: visible;
+  transition: transform var(--transition-speed) var(--transition-curve);
+}
+
+.invite-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--accent-olive), var(--border-gold), var(--accent-olive), transparent);
+}
+
+/* Envelope Flap Accent */
+.envelope-flap {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 180px;
+  height: 90px;
+  background: rgba(36, 57, 94, 0.5);
+  border: 1px solid var(--border-gold);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Wax Seal Badge */
+.seal-container {
+  position: absolute;
+  top: -38px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  cursor: pointer;
+  perspective: 1000px;
+}
+
+.seal-image {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 
+    0 10px 25px rgba(0, 0, 0, 0.65),
+    0 0 15px rgba(107, 122, 79, 0.5);
+  border: 2px solid rgba(212, 175, 55, 0.7);
+  transition: transform 0.35s var(--transition-curve), box-shadow 0.35s ease;
+}
+
+.seal-container:hover .seal-image {
+  transform: scale(1.08) rotate(5deg);
+  box-shadow: 
+    0 14px 30px rgba(0, 0, 0, 0.75),
+    0 0 25px rgba(138, 154, 91, 0.65);
+}
+
+/* Panel Layout & Transitions (~280ms smooth fade/slide) */
+.panel {
+  display: none;
+  opacity: 0;
+  transform: translateY(14px) scale(0.985);
+  transition: opacity var(--transition-speed) var(--transition-curve), 
+              transform var(--transition-speed) var(--transition-curve);
+}
+
+.panel.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.panel.leaving {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.98);
+}
+
+/* Header & Typography */
+.card-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.badge-tag {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--accent-olive-focus);
+  background: var(--accent-olive-light);
+  border: 1px solid rgba(138, 154, 91, 0.4);
+  padding: 0.35rem 0.9rem;
+  border-radius: 50px;
+  margin-bottom: 0.85rem;
+}
+
+.heading-serif {
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 5.5vw, 2.15rem);
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text-parchment);
+  letter-spacing: -0.01em;
+  margin-bottom: 0.6rem;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+}
+
+.subheading-text {
+  font-size: 1.05rem;
+  color: var(--text-parchment-muted);
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* ACCESSIBILITY: Explicit Keyboard Focus States */
+:focus-visible,
+.btn:focus-visible,
+.custom-input:focus-visible,
+.chip:focus-visible,
+.sound-toggle-btn:focus-visible {
+  outline: 2.5px solid var(--accent-olive-focus) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 5px rgba(164, 184, 117, 0.4) !important;
+}
+
+/* Interactive Buttons */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 440px) {
+  .button-group.row {
+    flex-direction: row;
+  }
+  .button-group.row .btn {
+    flex: 1;
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.95rem 1.6rem;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  transition: all 0.25s var(--transition-curve);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Primary Button (Olive Green) */
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-olive), #52603b);
+  color: var(--text-parchment);
+  box-shadow: 0 6px 18px rgba(107, 122, 79, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(138, 154, 91, 0.45);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--accent-olive-hover), var(--accent-olive));
+  transform: translateY(-2px) scale(1.015);
+  box-shadow: 0 10px 24px rgba(107, 122, 79, 0.52);
+  color: #ffffff;
+}
+
+.btn-primary:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* On-Brand WhatsApp Button */
+.btn-whatsapp {
+  background: linear-gradient(135deg, #4d6136, #374725);
+  color: var(--text-parchment);
+  border: 1px solid rgba(154, 176, 112, 0.5);
+  box-shadow: 0 6px 18px rgba(55, 71, 37, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-whatsapp:hover {
+  background: linear-gradient(135deg, #5b7340, #42552d);
+  transform: translateY(-2px) scale(1.015);
+  box-shadow: 0 10px 24px rgba(77, 97, 54, 0.55);
+  color: #ffffff;
+}
+
+.btn-whatsapp:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.fallback-note {
+  font-size: 0.76rem;
+  color: var(--text-parchment-dim);
+  text-align: center;
+  margin-top: 0.35rem;
+}
+
+/* Secondary Button (Ghost Navy) */
+.btn-secondary {
+  background: rgba(250, 246, 236, 0.07);
+  color: var(--text-parchment);
+  border: 1px solid rgba(250, 246, 236, 0.3);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.btn-secondary:hover {
+  background: rgba(250, 246, 236, 0.15);
+  border-color: rgba(250, 246, 236, 0.5);
+  transform: translateY(-2px);
+  color: #ffffff;
+}
+
+.btn-secondary:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* Accent Button (Olive Outline) */
+.btn-outline-olive {
+  background: transparent;
+  color: var(--accent-olive-focus);
+  border: 1.5px solid var(--accent-olive);
+}
+
+.btn-outline-olive:hover {
+  background: var(--accent-olive-light);
+  color: var(--text-parchment);
+  border-color: var(--accent-olive-hover);
+  transform: translateY(-2px);
+}
+
+/* Form Pickers */
+.picker-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  margin: 1.25rem 0 1.5rem 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  text-align: left;
+}
+
+.form-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-parchment-muted);
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.custom-input {
+  width: 100%;
+  padding: 0.85rem 1.1rem;
+  background: rgba(16, 26, 45, 0.85);
+  border: 1px solid rgba(250, 246, 236, 0.25);
+  border-radius: 12px;
+  color: var(--text-parchment);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.custom-input:hover {
+  border-color: rgba(154, 176, 112, 0.6);
+}
+
+.custom-input::-webkit-calendar-picker-indicator {
+  filter: invert(0.9) sepia(0.2) saturate(0.5) hue-rotate(30deg);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+/* Quick Slot Chips */
+.quick-chips-title {
+  font-size: 0.8rem;
+  color: var(--text-parchment-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+}
+
+.chips-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  padding: 0.45rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  background: rgba(250, 246, 236, 0.08);
+  border: 1px solid rgba(250, 246, 236, 0.22);
+  border-radius: 30px;
+  color: var(--text-parchment-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chip:hover, .chip.selected {
+  background: var(--accent-olive-light);
+  border-color: var(--accent-olive-hover);
+  color: var(--text-parchment);
+}
+
+/* Confirmed Box */
+.confirmation-box {
+  background: rgba(107, 122, 79, 0.18);
+  border: 1px dashed var(--accent-olive-hover);
+  border-radius: 16px;
+  padding: 1.25rem;
+  margin: 1.25rem 0;
+  text-align: center;
+}
+
+.confirmed-slot-text {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-parchment);
+  margin-top: 0.4rem;
+}
+
+.handwritten-signature {
+  font-family: var(--font-hand);
+  font-size: 1.6rem;
+  color: var(--accent-olive-focus);
+  margin-top: 1rem;
+  text-align: center;
+  transform: rotate(-2deg);
+}
+
+/* Footer & Obvious Sound Toggle */
+.card-footer-note {
+  margin-top: 1.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(250, 246, 236, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: var(--text-parchment-dim);
+}
+
+.sound-toggle-btn {
+  background: rgba(250, 246, 236, 0.08);
+  border: 1px solid rgba(250, 246, 236, 0.25);
+  color: var(--text-parchment-muted);
+  border-radius: 20px;
+  padding: 0.35rem 0.8rem;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.sound-toggle-btn.sound-off {
+  opacity: 0.55;
+  background: transparent;
+  border-color: rgba(250, 246, 236, 0.15);
+  color: var(--text-parchment-dim);
+}
+
+.sound-toggle-btn:hover {
+  opacity: 1;
+  background: rgba(250, 246, 236, 0.15);
+  border-color: var(--accent-olive-hover);
+  color: var(--text-parchment);
+}
+
+/* MOBILE RESPONSIVENESS */
+@media (max-width: 480px) {
+  body {
+    padding: 3.25rem 0.85rem 2rem 0.85rem;
+  }
+
+  .invite-card {
+    padding: 2.75rem 1.25rem 1.5rem 1.25rem;
+    border-radius: 16px;
+  }
+
+  .seal-image {
+    width: 58px;
+    height: 58px;
+  }
+
+  .seal-container {
+    top: -29px;
+  }
+
+  .envelope-flap {
+    width: 140px;
+    height: 70px;
+    top: -45px;
+  }
+
+  .heading-serif {
+    font-size: 1.6rem;
+  }
+
+  .subheading-text {
+    font-size: 0.95rem;
+  }
+
+  .button-group.row {
+    flex-direction: column;
+  }
+
+  .button-group.row .btn {
+    width: 100%;
+  }
+}
+
+@media (max-height: 700px) {
+  body {
+    padding-top: 3.25rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .card-header {
+    margin-bottom: 1rem;
+  }
+
+  .button-group {
+    margin-top: 1.2rem;
+  }
+}
